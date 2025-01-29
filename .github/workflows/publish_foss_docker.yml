@@ -18,28 +18,37 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        architecture: [amd64, arm64]
     env:
       GIT_REF: ${{ github.head_ref || github.ref_name }} # ref_name to get tags/branches
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
+      - name: Strip enterprise code
+        run: |
+          rm -rf enterprise
+          rm -rf spec/enterprise
+
+      - name: Set Chatwoot edition
+        run: |
+          echo -en '\nENV CW_EDITION="ce"' >> docker/Dockerfile
 
       - name: set docker tag
         run: |
           # Replace forward slashes with hyphens in the ref name
           SANITIZED_REF=$(echo "$GIT_REF" | sed 's/\//-/g')
-          echo "DOCKER_TAG=r1ckjr/mcz-cw-arm:$SANITIZED_REF" >> $GITHUB_ENV
+          echo "DOCKER_TAG=chatwoot/chatwoot:$SANITIZED_REF-ce" >> $GITHUB_ENV
 
       - name: replace docker tag if master
         if: github.ref_name == 'master'
         run: |
-          echo "DOCKER_TAG=r1ckjr/mcz-cw-arm:latest" >> $GITHUB_ENV
+          echo "DOCKER_TAG=chatwoot/chatwoot:latest-ce" >> $GITHUB_ENV
 
       - name: Login to DockerHub
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -53,6 +62,6 @@ jobs:
         with:
           context: .
           file: docker/Dockerfile
-          platforms: linux/${{ matrix.architecture }}
+          platforms: linux/amd64, linux/arm64
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: ${{ env.DOCKER_TAG }}-${{ matrix.architecture }}
+          tags: ${{ env.DOCKER_TAG }}
