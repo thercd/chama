@@ -40,22 +40,13 @@ jobs:
           platform=${{ matrix.platform }}
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
 
-      - name: Strip enterprise code
-        run: |
-          rm -rf enterprise
-          rm -rf spec/enterprise
-
-      - name: Set Chatwoot edition
-        run: |
-          echo -en '\nENV CW_EDITION="ce"' >> docker/Dockerfile
-
       - name: Set Docker Tags
         run: |
           SANITIZED_REF=$(echo "$GIT_REF" | sed 's/\//-/g')
           if [ "${{ github.ref_name }}" = "master" ]; then
-            echo "DOCKER_TAG=${DOCKER_REPO}:latest-ce" >> $GITHUB_ENV
+            echo "DOCKER_TAG=${DOCKER_REPO}:latest" >> $GITHUB_ENV
           else
-            echo "DOCKER_TAG=${DOCKER_REPO}:${SANITIZED_REF}-ce" >> $GITHUB_ENV
+            echo "DOCKER_TAG=${DOCKER_REPO}:${SANITIZED_REF}" >> $GITHUB_ENV
           fi
 
       - name: Set up QEMU
@@ -123,9 +114,9 @@ jobs:
         run: |
           SANITIZED_REF=$(echo "$GIT_REF" | sed 's/\//-/g')
           if [ "${{ github.ref_name }}" = "master" ]; then
-            TAG="${DOCKER_REPO}:latest-ce"
+            TAG="${DOCKER_REPO}:latest"
           else
-            TAG="${DOCKER_REPO}:${SANITIZED_REF}-ce"
+            TAG="${DOCKER_REPO}:${SANITIZED_REF}"
           fi
           
           docker buildx imagetools create -t $TAG \
@@ -137,9 +128,9 @@ jobs:
         run: |
           SANITIZED_REF=$(echo "$GIT_REF" | sed 's/\//-/g')
           if [ "${{ github.ref_name }}" = "master" ]; then
-            TAG="${DOCKER_REPO}:latest-ce"
+            TAG="${DOCKER_REPO}:latest"
           else
-            TAG="${DOCKER_REPO}:${SANITIZED_REF}-ce"
+            TAG="${DOCKER_REPO}:${SANITIZED_REF}"
           fi
           
           docker buildx imagetools inspect $TAG
