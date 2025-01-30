@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_REPO:  ghcr.io/r1ckjr/chama
+  DOCKER_REPO:  ghcr.io/thercd/chama
 
 jobs:
   build:
