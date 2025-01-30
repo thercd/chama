@@ -18,6 +18,8 @@ ENV NODE_OPTIONS ${NODE_OPTIONS}
 
 ENV BUNDLE_PATH="/gems"
 
+RUN chmod +x docker/entrypoints/rails.sh
+
 RUN apk update && apk add --no-cache \
   openssl \
   tar \
@@ -121,8 +123,8 @@ RUN if [ "$RAILS_ENV" != "production" ]; then \
   && source /root/.shrc \
   && pnpm --version; \
   fi
-  
-RUN chmod +x docker/entrypoints/rails.sh
+
+
 
 COPY --from=pre-builder /gems/ /gems/
 COPY --from=pre-builder /app /app
