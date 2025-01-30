@@ -18,7 +18,7 @@ ENV NODE_OPTIONS ${NODE_OPTIONS}
 
 ENV BUNDLE_PATH="/gems"
 
-RUN chmod +x /docker/entrypoints/rails.sh
+RUN chmod +x ./docker/entrypoints/rails.sh
 
 RUN apk update && apk add --no-cache \
   openssl \
