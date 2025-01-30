@@ -49,6 +49,9 @@ jobs:
             echo "DOCKER_TAG=${DOCKER_REPO}:${SANITIZED_REF}" >> $GITHUB_ENV
           fi
 
+      - name: Set permissions for rails.sh
+        run: chmod +x docker/entrypoints/rails.sh
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
